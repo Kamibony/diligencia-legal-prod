@@ -15,6 +15,7 @@ class LawyerProfile(BaseModel):
     subscription_status: str
     latitude: float
     longitude: float
+    geohash: str
     is_online: bool
     updated_at: datetime
 
