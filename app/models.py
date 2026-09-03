@@ -2,6 +2,11 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 from pydantic import BaseModel
 
+class OcrExtractedData(BaseModel):
+    detainee_name: str
+    crime_classification: Optional[str] = None
+    warrant_number: Optional[str] = None
+
 class UserProfile(BaseModel):
     uid: str
     cpf_masked: str
