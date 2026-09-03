@@ -20,13 +20,22 @@ class LawyerProfile(BaseModel):
 
 class IncidentCreate(BaseModel):
     client_id: str
+    detainee_name: str
+    detainee_cpf: Optional[str] = None
     latitude: float
     longitude: float
     document_base64: str
+    warrant_number: Optional[str] = None
 
 class IncidentResponse(BaseModel):
     incident_id: str
     client_id: str
+    detainee_name: str
+    detainee_cpf: Optional[str] = None
+    latitude: float
+    longitude: float
+    warrant_number: Optional[str] = None
+    geohash: str
     lawyer_id: Optional[str] = None
     status: str
     extracted_data: Dict[str, Any]

@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime
 
 from app.repositories.incident_repo import IncidentRepository
-from app.models import IncidentResponse
+from app.models import IncidentResponse, IncidentCreate
 
 class TestIncidentRepository(unittest.TestCase):
     @patch('app.repositories.base.get_db')
@@ -18,9 +18,16 @@ class TestIncidentRepository(unittest.TestCase):
 
         repo = IncidentRepository()
         incident_id = "test-incident-123"
-        client_id = "client-456"
+        payload = IncidentCreate(
+            client_id="client-456",
+            detainee_name="John Doe",
+            latitude=-23.5505,
+            longitude=-46.6333,
+            document_base64="base64"
+        )
+        geohash = "6gyf4"
 
-        repo.create_new_incident(incident_id=incident_id, client_id=client_id)
+        repo.create_new_incident(incident_id=incident_id, payload=payload, geohash=geohash)
 
         mock_db.collection.assert_called_once_with('incidents')
         mock_collection.document.assert_called_once_with(incident_id)
@@ -29,8 +36,10 @@ class TestIncidentRepository(unittest.TestCase):
         saved_data = args[0]
 
         self.assertEqual(saved_data['status'], 'PENDING')
-        self.assertEqual(saved_data['client_id'], client_id)
+        self.assertEqual(saved_data['client_id'], payload.client_id)
         self.assertEqual(saved_data['incident_id'], incident_id)
+        self.assertEqual(saved_data['detainee_name'], payload.detainee_name)
+        self.assertEqual(saved_data['geohash'], geohash)
         self.assertEqual(saved_data['extracted_data'], {})
         self.assertIsNone(saved_data['lawyer_id'])
         self.assertIn('created_at', saved_data)
