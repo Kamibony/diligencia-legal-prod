@@ -57,3 +57,31 @@ class IncidentRepository(BaseRepository[IncidentResponse]):
         doc_ref = self._collection.document(incident_id)
         transaction = db.transaction()
         _accept_incident_transaction(transaction, doc_ref, lawyer_id)
+
+    def find_nearby_pending_incidents(self, bounding_geohashes: list[str]) -> list[IncidentResponse]:
+        """
+        Finds all pending incidents within the given geohashes.
+        Batches the queries due to Firestore's 10-value limit for IN clauses.
+        """
+        if not bounding_geohashes:
+            return []
+
+        # Deduplicate to avoid processing the same geohash multiple times
+        unique_hashes = list(set(bounding_geohashes))
+        chunk_size = 10
+        chunks = [unique_hashes[i:i + chunk_size] for i in range(0, len(unique_hashes), chunk_size)]
+
+        all_incidents: dict[str, IncidentResponse] = {}
+
+        for chunk in chunks:
+            query = self._collection.where(
+                filter=firestore.FieldFilter("status", "==", "PENDING")
+            ).where(
+                filter=firestore.FieldFilter("geohash", "in", chunk)
+            )
+
+            for doc in query.stream():
+                incident = self.model(**doc.to_dict())
+                all_incidents[incident.incident_id] = incident
+
+        return list(all_incidents.values())

@@ -78,3 +78,46 @@ class TestIncidentAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 409)
         self.assertIn("detail", response.json())
         mock_service_instance.accept_incident.assert_called_once_with("test-incident-id", "lawyer-123")
+
+    @patch('app.api.incidents.IncidentService')
+    def test_get_nearby_incidents_success(self, mock_service_class):
+        mock_service_instance = mock_service_class.return_value
+
+        mock_incident = IncidentResponse(
+            incident_id='uuid-test-123',
+            client_id='client-123',
+            detainee_name='John Doe',
+            latitude=-23.5505,
+            longitude=-46.6333,
+            geohash='6gyf4',
+            status='PENDING',
+            extracted_data={},
+            created_at='2023-01-01T00:00:00Z'
+        )
+        mock_service_instance.get_nearby_incidents.return_value = [mock_incident]
+
+        response = self.client.get("/incidents/nearby?lat=-23.5&lon=-46.6&radius=3000")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['incident_id'], 'uuid-test-123')
+
+        mock_service_instance.get_nearby_incidents.assert_called_once_with(lat=-23.5, lon=-46.6, radius_m=3000.0)
+
+    @patch('app.api.incidents.IncidentService')
+    def test_get_nearby_incidents_default_radius(self, mock_service_class):
+        mock_service_instance = mock_service_class.return_value
+        mock_service_instance.get_nearby_incidents.return_value = []
+
+        response = self.client.get("/incidents/nearby?lat=-23.5&lon=-46.6")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 0)
+
+        mock_service_instance.get_nearby_incidents.assert_called_once_with(lat=-23.5, lon=-46.6, radius_m=5000.0)
+
+    def test_get_nearby_incidents_missing_params(self):
+        response = self.client.get("/incidents/nearby?lat=-23.5")
+        self.assertEqual(response.status_code, 422) # Unprocessable Entity
