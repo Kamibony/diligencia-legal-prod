@@ -1,5 +1,6 @@
 import logging
-from fastapi import APIRouter, HTTPException
+from typing import List
+from fastapi import APIRouter, HTTPException, Query
 
 from app.models import IncidentCreate, IncidentResponse, IncidentAcceptRequest
 from app.services.incident_service import IncidentService
@@ -17,6 +18,20 @@ def create_incident(payload: IncidentCreate):
     except Exception as e:
         logger.error(f"Error creating incident: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/nearby", response_model=List[IncidentResponse], status_code=200)
+def get_nearby_incidents(
+    lat: float = Query(...),
+    lon: float = Query(...),
+    radius: float = Query(5000.0)
+):
+    try:
+        service = IncidentService()
+        return service.get_nearby_incidents(lat=lat, lon=lon, radius_m=radius)
+    except Exception as e:
+        logger.error(f"Error fetching nearby incidents: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 
 @router.post("/{incident_id}/accept", response_model=dict, status_code=200)
 def accept_incident(incident_id: str, payload: IncidentAcceptRequest):

@@ -61,3 +61,37 @@ class TestIncidentService(unittest.TestCase):
         mock_notification_instance.dispatch_to_lawyers.assert_called_once_with(mock_incident_response, [mock_lawyer_profile])
 
         self.assertEqual(result, mock_incident_response)
+
+    @patch('app.services.incident_service.IncidentRepository')
+    @patch('app.services.incident_service.LocationService')
+    def test_get_nearby_incidents(self, mock_location_service, mock_incident_repo_class):
+        mock_location_instance = mock_location_service.return_value
+        mock_location_instance.get_bounding_geohashes.return_value = ['geohash1', 'geohash2']
+
+        mock_incident_repo_instance = mock_incident_repo_class.return_value
+        mock_incident1 = MagicMock(spec=IncidentResponse)
+        mock_incident_repo_instance.find_nearby_pending_incidents.return_value = [mock_incident1]
+
+        service = IncidentService()
+        incidents = service.get_nearby_incidents(lat=-23.5, lon=-46.6, radius_m=3000)
+
+        mock_location_instance.get_bounding_geohashes.assert_called_once_with(-23.5, -46.6, radius_m=3000)
+        mock_incident_repo_instance.find_nearby_pending_incidents.assert_called_once_with(['geohash1', 'geohash2'])
+        self.assertEqual(incidents, [mock_incident1])
+
+    @patch('app.services.incident_service.IncidentRepository')
+    @patch('app.services.incident_service.LocationService')
+    def test_get_nearby_incidents_default_radius(self, mock_location_service, mock_incident_repo_class):
+        mock_location_instance = mock_location_service.return_value
+        mock_location_instance.get_bounding_geohashes.return_value = ['geohash1', 'geohash2']
+
+        mock_incident_repo_instance = mock_incident_repo_class.return_value
+        mock_incident1 = MagicMock(spec=IncidentResponse)
+        mock_incident_repo_instance.find_nearby_pending_incidents.return_value = [mock_incident1]
+
+        service = IncidentService()
+        incidents = service.get_nearby_incidents(lat=-23.5, lon=-46.6)
+
+        mock_location_instance.get_bounding_geohashes.assert_called_once_with(-23.5, -46.6, radius_m=5000)
+        mock_incident_repo_instance.find_nearby_pending_incidents.assert_called_once_with(['geohash1', 'geohash2'])
+        self.assertEqual(incidents, [mock_incident1])
