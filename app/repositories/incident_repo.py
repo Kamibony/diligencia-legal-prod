@@ -28,13 +28,19 @@ class IncidentRepository(BaseRepository[IncidentResponse]):
     def __init__(self):
         super().__init__(collection_name="incidents", model=IncidentResponse)
 
-    def create_new_incident(self, incident_id: str, client_id: str) -> IncidentResponse:
+    def create_new_incident(self, incident_id: str, payload: "IncidentCreate", geohash: str) -> IncidentResponse:
         """
         Creates a new incident document enforcing 'PENDING' status.
         """
         incident_data = IncidentResponse(
             incident_id=incident_id,
-            client_id=client_id,
+            client_id=payload.client_id,
+            detainee_name=payload.detainee_name,
+            detainee_cpf=payload.detainee_cpf,
+            latitude=payload.latitude,
+            longitude=payload.longitude,
+            warrant_number=payload.warrant_number,
+            geohash=geohash,
             lawyer_id=None,
             status="PENDING",
             extracted_data={},
