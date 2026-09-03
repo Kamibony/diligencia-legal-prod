@@ -46,3 +46,6 @@ class IncidentResponse(BaseModel):
     status: str
     extracted_data: Dict[str, Any]
     created_at: datetime
+
+class IncidentAcceptRequest(BaseModel):
+    lawyer_id: str

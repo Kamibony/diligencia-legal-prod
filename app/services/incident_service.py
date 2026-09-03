@@ -40,3 +40,6 @@ class IncidentService:
             self.notification_service.dispatch_to_lawyers(incident, available_lawyers)
 
         return incident
+
+    def accept_incident(self, incident_id: str, lawyer_id: str) -> None:
+        self.repository.accept_incident(incident_id, lawyer_id)

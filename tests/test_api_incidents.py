@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.models import IncidentResponse
+from app.repositories.incident_repo import IncidentAlreadyAcceptedError
 
 class TestIncidentAPI(unittest.TestCase):
     def setUp(self):
@@ -53,3 +54,27 @@ class TestIncidentAPI(unittest.TestCase):
 
         response = self.client.post("/incidents", json=payload)
         self.assertEqual(response.status_code, 422) # Unprocessable Entity
+
+    @patch('app.api.incidents.IncidentService')
+    def test_accept_incident_success(self, mock_service_class):
+        mock_service_instance = mock_service_class.return_value
+        mock_service_instance.accept_incident.return_value = None
+
+        payload = {"lawyer_id": "lawyer-123"}
+        response = self.client.post("/incidents/test-incident-id/accept", json=payload)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"status": "success", "message": "Incident accepted"})
+        mock_service_instance.accept_incident.assert_called_once_with("test-incident-id", "lawyer-123")
+
+    @patch('app.api.incidents.IncidentService')
+    def test_accept_incident_conflict(self, mock_service_class):
+        mock_service_instance = mock_service_class.return_value
+        mock_service_instance.accept_incident.side_effect = IncidentAlreadyAcceptedError("Incident is not pending")
+
+        payload = {"lawyer_id": "lawyer-123"}
+        response = self.client.post("/incidents/test-incident-id/accept", json=payload)
+
+        self.assertEqual(response.status_code, 409)
+        self.assertIn("detail", response.json())
+        mock_service_instance.accept_incident.assert_called_once_with("test-incident-id", "lawyer-123")
