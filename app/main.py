@@ -1,7 +1,6 @@
 from fastapi import FastAPI
+from app.api.health import router as health_router
 
 app = FastAPI(title="Legal Backend API")
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok", "service": "legal-backend"}
+app.include_router(health_router)
