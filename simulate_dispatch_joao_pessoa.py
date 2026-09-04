@@ -1,6 +1,7 @@
 import httpx
 import base64
 import os
+import sys
 import asyncio
 from httpx import AsyncClient
 
@@ -67,8 +68,10 @@ async def simulate_dispatch():
 
         except httpx.HTTPStatusError as e:
             print(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+            sys.exit(1)
         except Exception as e:
             print(f"An error occurred: {e}")
+            sys.exit(1)
 
 if __name__ == "__main__":
     asyncio.run(simulate_dispatch())
