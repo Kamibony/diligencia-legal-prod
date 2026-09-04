@@ -16,14 +16,18 @@ class IncidentService:
     def create_incident(self, payload: IncidentCreate) -> IncidentResponse:
         incident_id = str(uuid4())
 
-        # Calculate geohash, though it isn't explicitly persisted in IncidentResponse model yet
+        # Calculate geohash
         geohash = self.location_service.get_geohash(payload.latitude, payload.longitude, precision=6)
+
+        # Calculate geohash prefixes for querying at different zoom levels
+        geohashes = [geohash[:i] for i in range(1, 7)]
 
         # Create incident
         incident = self.repository.create_new_incident(
             incident_id=incident_id,
             payload=payload,
-            geohash=geohash
+            geohash=geohash,
+            geohashes=geohashes
         )
 
         # Find available lawyers in a 10km radius

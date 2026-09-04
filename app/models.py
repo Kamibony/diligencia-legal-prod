@@ -42,6 +42,7 @@ class IncidentResponse(BaseModel):
     longitude: float
     warrant_number: Optional[str] = None
     geohash: str
+    geohashes: Optional[list[str]] = None
     lawyer_id: Optional[str] = None
     status: str
     extracted_data: Dict[str, Any]
