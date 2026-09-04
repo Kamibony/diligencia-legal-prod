@@ -45,3 +45,14 @@ def accept_incident(incident_id: str, payload: IncidentAcceptRequest):
     except Exception as e:
         logger.error(f"Error accepting incident {incident_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.get("/me", response_model=List[IncidentResponse], status_code=200)
+def get_my_incidents(
+    lawyer_id: str = Query(...)
+):
+    try:
+        service = IncidentService()
+        return service.get_lawyer_incidents(lawyer_id)
+    except Exception as e:
+        logger.error(f"Error fetching lawyer incidents: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")

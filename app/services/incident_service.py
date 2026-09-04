@@ -53,3 +53,6 @@ class IncidentService:
             lat, lon, radius_m=radius_m
         )
         return self.repository.find_nearby_pending_incidents(bounding_geohashes)
+
+    def get_lawyer_incidents(self, lawyer_id: str) -> list[IncidentResponse]:
+        return self.repository.find_accepted_incidents_by_lawyer(lawyer_id)
