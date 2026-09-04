@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PT_BR } from '../locales/pt-BR';
 
 // Fallback to João Pessoa, Paraíba
 const FALLBACK_LOCATION = {
@@ -11,7 +12,7 @@ export const useGeolocation = () => {
   const [state, setState] = useState({
     location: !isSupported ? FALLBACK_LOCATION : null,
     loading: isSupported, // If supported, we start loading
-    error: !isSupported ? 'Geolocation is not supported by your browser' : null,
+    error: !isSupported ? (PT_BR.geolocation.notSupported as string) : null,
     usingFallback: !isSupported,
   });
 
