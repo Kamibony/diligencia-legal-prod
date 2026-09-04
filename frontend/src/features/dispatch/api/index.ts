@@ -17,3 +17,7 @@ export const getNearbyIncidents = async (lat: number, lon: number, radius = 5000
   });
   return response.data;
 };
+
+export const acceptIncident = async (incident_id: string, lawyer_id: string): Promise<void> => {
+  await api.post(`/incidents/${incident_id}/accept`, { lawyer_id });
+};
