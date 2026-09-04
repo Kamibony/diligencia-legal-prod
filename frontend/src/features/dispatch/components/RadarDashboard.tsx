@@ -1,5 +1,7 @@
 import { useGeolocation } from '../../../utils/useGeolocation';
 import { useIncidents } from '../hooks/useIncidents';
+import { useAcceptIncident } from '../hooks/useAcceptIncident';
+import { useAuthStore } from '../../../store/authStore';
 import { PT_BR } from '../../../locales/pt-BR';
 
 export const RadarDashboard = () => {
@@ -8,6 +10,17 @@ export const RadarDashboard = () => {
     location?.lat ?? null,
     location?.lon ?? null
   );
+
+  const acceptIncidentMutation = useAcceptIncident();
+  const user = useAuthStore((state) => state.user);
+
+  const handleAcceptIncident = (incident_id: string) => {
+    if (!user?.cpf) {
+      alert("Erro: Usuário não autenticado ou CPF ausente.");
+      return;
+    }
+    acceptIncidentMutation.mutate({ incident_id, lawyer_id: user.cpf });
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-10 px-4 pb-20">
@@ -65,8 +78,18 @@ export const RadarDashboard = () => {
             <p className="text-sm text-gray-600 mb-4">
               {PT_BR.dispatch.created}{new Date(incident.created_at).toLocaleTimeString()}
             </p>
-            <button className="w-full py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
-              {PT_BR.dispatch.acceptIncident}
+            <button
+              className={`w-full py-2 text-white rounded-lg font-medium transition-colors ${
+                incident.status === 'PENDING'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-gray-400 cursor-not-allowed'
+              }`}
+              onClick={() => incident.status === 'PENDING' && handleAcceptIncident(incident.incident_id)}
+              disabled={incident.status !== 'PENDING' || acceptIncidentMutation.isPending}
+            >
+              {acceptIncidentMutation.isPending && acceptIncidentMutation.variables?.incident_id === incident.incident_id
+                ? 'Aceitando...'
+                : PT_BR.dispatch.acceptIncident}
             </button>
           </div>
         ))}
