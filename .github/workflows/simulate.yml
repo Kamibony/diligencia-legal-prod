@@ -21,5 +21,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run simulate dispatch script
+        env:
+          API_URL: ${{ vars.API_URL }}
         run: |
           python simulate_dispatch_joao_pessoa.py
