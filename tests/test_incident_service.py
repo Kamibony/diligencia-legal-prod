@@ -54,7 +54,8 @@ class TestIncidentService(unittest.TestCase):
         mock_incident_repo_instance.create_new_incident.assert_called_once_with(
             incident_id='test-uuid',
             payload=payload,
-            geohash='geohash123'
+            geohash='geohash123',
+            geohashes=['g', 'ge', 'geo', 'geoh', 'geoha', 'geohas']
         )
 
         mock_lawyer_repo_instance.find_available_lawyers.assert_called_once_with(['geohash123', 'geohash124'])
