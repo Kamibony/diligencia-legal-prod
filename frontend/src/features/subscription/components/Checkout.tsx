@@ -9,23 +9,32 @@ export const Checkout = () => {
 
   useEffect(() => {
     let successTimer: number | undefined;
-    let redirectTimer: number | undefined;
 
     if (loading) {
       successTimer = window.setTimeout(() => {
         setLoading(false);
         setSuccess(true);
-        redirectTimer = window.setTimeout(() => {
-          navigate('/meu-plano');
-        }, 1500);
       }, 2000);
     }
 
     return () => {
       if (successTimer) clearTimeout(successTimer);
+    };
+  }, [loading]);
+
+  useEffect(() => {
+    let redirectTimer: number | undefined;
+
+    if (success) {
+      redirectTimer = window.setTimeout(() => {
+        navigate('/meu-plano');
+      }, 1500);
+    }
+
+    return () => {
       if (redirectTimer) clearTimeout(redirectTimer);
     };
-  }, [loading, navigate]);
+  }, [success, navigate]);
 
   const handlePayment = () => {
     setLoading(true);
