@@ -12,20 +12,31 @@ export const MockGovBrLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white shadow rounded-lg">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {PT_BR.auth.mockLoginTitle}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-50 px-4">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white shadow-xl rounded-2xl border border-gray-100">
+        <div className="text-center">
+          <h1 className="text-4xl font-extrabold text-[#1351b4] mb-2 tracking-tight">
+            {PT_BR.auth.systemName}
+          </h1>
+          <h2 className="mt-4 text-2xl font-bold text-gray-900">
+            {PT_BR.auth.welcomeTitle}
           </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            {PT_BR.auth.welcomeSubtitle}
+          </p>
         </div>
-        <div className="mt-8 space-y-6">
+
+        <div className="mt-10 space-y-6">
           <button
             onClick={handleLogin}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full flex justify-center py-3 px-6 border border-transparent text-base font-bold rounded-full text-white bg-[#1351b4] hover:bg-[#0c326f] shadow-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1351b4]"
           >
             {PT_BR.auth.loginButton}
           </button>
+
+          <div className="text-xs text-center text-gray-400 mt-4">
+             {PT_BR.auth.mockLoginTitle}
+          </div>
         </div>
       </div>
     </div>
