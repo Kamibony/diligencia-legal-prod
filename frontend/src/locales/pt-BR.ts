@@ -46,5 +46,20 @@ export const PT_BR = {
     success: "Ocorrência gerada com sucesso! Aguarde o contato do advogado.",
     error: "Erro ao gerar ocorrência. Tente novamente.",
     creating: "Gerando ocorrência...",
+  },
+  checkout: {
+    title: "Proteção Legal Familiar",
+    description: "Assine agora para proteger toda sua família com acesso imediato a advogados em emergências.",
+    price: "R$ 99",
+    payWithPix: "Pagar com Pix",
+    processingPayment: "Processando...",
+    successPayment: "Pagamento Aprovado!"
+  },
+  myPlan: {
+    title: "Plano Ativo!",
+    successMessage: "Sua família agora está protegida pelo Círculo de Confiança.",
+    emergencyLink: "Link de Emergência Familiar",
+    copyLink: "Copiar Link",
+    linkCopied: "Copiado!"
   }
 } as const;

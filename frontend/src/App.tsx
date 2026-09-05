@@ -3,6 +3,8 @@ import { MockGovBrLogin } from './features/auth/components/MockGovBrLogin';
 import { RadarDashboard } from './features/dispatch/components/RadarDashboard';
 import { MyCasesDashboard } from './features/cases/components/MyCasesDashboard';
 import { SosApp } from './features/sos/components/SosApp';
+import { Checkout } from './features/subscription/components/Checkout';
+import { MyPlan } from './features/subscription/components/MyPlan';
 import { BottomNavigation } from './components/BottomNavigation';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { useAuthStore } from './store/authStore';
@@ -21,6 +23,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginRedirect />} />
         <Route path="/sos" element={<SosApp />} />
+
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/meu-plano" element={<MyPlan />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<BottomNavigation />}>
