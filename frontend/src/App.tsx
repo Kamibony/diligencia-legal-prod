@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { MockGovBrLogin } from './features/auth/components/MockGovBrLogin';
 import { RadarDashboard } from './features/dispatch/components/RadarDashboard';
 import { MyCasesDashboard } from './features/cases/components/MyCasesDashboard';
+import { SosApp } from './features/sos/components/SosApp';
 import { BottomNavigation } from './components/BottomNavigation';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { useAuthStore } from './store/authStore';
@@ -19,6 +20,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<LoginRedirect />} />
+        <Route path="/sos" element={<SosApp />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<BottomNavigation />}>

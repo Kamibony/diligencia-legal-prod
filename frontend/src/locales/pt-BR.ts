@@ -31,4 +31,20 @@ export const PT_BR = {
   geolocation: {
     notSupported: "Geolocalização não é suportada pelo seu navegador",
   },
+  sos: {
+    buttonTitle: "SOS - Acionar Advogado",
+    formTitle: "Solicitar Assistência",
+    incidentTypeLabel: "Tipo de Ocorrência",
+    incidentTypes: {
+      policeApproach: "Abordagem Policial",
+      flagrantArrest: "Prisão em flagrante",
+      searchWarrant: "Mandado de Busca",
+      other: "Outros",
+    },
+    locationConfirm: "Permitir compartilhamento da minha localização atual.",
+    submit: "Enviar Solicitação",
+    success: "Ocorrência gerada com sucesso! Aguarde o contato do advogado.",
+    error: "Erro ao gerar ocorrência. Tente novamente.",
+    creating: "Gerando ocorrência...",
+  }
 } as const;
