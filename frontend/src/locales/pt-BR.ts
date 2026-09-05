@@ -8,6 +8,9 @@ export const PT_BR = {
   auth: {
     mockLoginTitle: "Login Simulado Gov.br",
     loginButton: "Entrar com gov.br",
+    systemName: "Diligência Legal",
+    welcomeTitle: "Acesso Rápido a Plantões",
+    welcomeSubtitle: "Conectando advogados a ocorrências em tempo real.",
   },
   dispatch: {
     title: "Radar de Ocorrências",

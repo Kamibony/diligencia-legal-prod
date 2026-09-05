@@ -4,6 +4,7 @@ import os
 import sys
 import asyncio
 import argparse
+import random
 from httpx import AsyncClient
 
 # Configuration
@@ -18,6 +19,13 @@ LONGITUDE = -34.86105
 dummy_pdf_content = b"%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Count 1\n/Kids [ 3 0 R ]\n>>\nendobj\n3 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [ 0 0 612 792 ]\n>>\nendobj\nxref\n0 4\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n0000000115 00000 n \ntrailer\n<<\n/Size 4\n/Root 1 0 R\n>>\nstartxref\n198\n%%EOF\n"
 encoded_pdf = base64.b64encode(dummy_pdf_content).decode("utf-8")
 
+BRAZILIAN_NAMES = [
+    "Maria Souza", "Carlos Pereira", "Ana Silva", "João Oliveira",
+    "Fernanda Santos", "Lucas Rodrigues", "Juliana Alves", "Pedro Costa",
+    "Camila Gomes", "Marcos Martins", "Beatriz Ribeiro", "Rafael Carvalho",
+    "Amanda Almeida", "Gabriel Lopes", "Larissa Soares", "Diego Fernandes"
+]
+
 async def simulate_dispatch(accept: bool, count: int):
     print(f"Starting simulated dispatch targeting {BASE_URL}")
     print(f"Location: João Pessoa (Lat: {LATITUDE}, Lon: {LONGITUDE})")
@@ -26,14 +34,17 @@ async def simulate_dispatch(accept: bool, count: int):
     async with AsyncClient(timeout=30.0) as client:
         try:
             for i in range(count):
+                detainee_name = random.choice(BRAZILIAN_NAMES)
+                warrant_number = str(random.randint(100000000, 999999999))
+
                 payload = {
                     "client_id": f"test_client_123_{i}",
-                    "detainee_name": f"João da Silva {i}",
+                    "detainee_name": detainee_name,
                     "detainee_cpf": "12345678900",
                     "latitude": LATITUDE + (i * 0.001), # Add small variation
                     "longitude": LONGITUDE + (i * 0.001),
                     "document_base64": encoded_pdf,
-                    "warrant_number": f"987654321_{i}"
+                    "warrant_number": warrant_number
                 }
 
                 # 1. Create Incident
