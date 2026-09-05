@@ -1,7 +1,8 @@
+import { IncidentDrawer } from './IncidentDrawer';
+import type { Incident } from '../api';
+import { useState } from 'react';
 import { useGeolocation } from '../../../utils/useGeolocation';
 import { useIncidents } from '../hooks/useIncidents';
-import { useAcceptIncident } from '../hooks/useAcceptIncident';
-import { useAuthStore } from '../../../store/authStore';
 import { PT_BR } from '../../../locales/pt-BR';
 
 export const RadarDashboard = () => {
@@ -11,13 +12,14 @@ export const RadarDashboard = () => {
     location?.lon ?? null
   );
 
-  const acceptIncidentMutation = useAcceptIncident();
-  const user = useAuthStore((state) => state.user);
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const handleAcceptIncident = (incident_id: string) => {
-    const lawyerId = user?.cpf || '12345678900';
-    acceptIncidentMutation.mutate({ incident_id, lawyer_id: lawyerId });
+  const handleIncidentClick = (incident: Incident) => {
+    setSelectedIncident(incident);
+    setIsDrawerOpen(true);
   };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-10 px-4 pb-20">
@@ -81,16 +83,20 @@ export const RadarDashboard = () => {
                   ? 'bg-green-600 hover:bg-green-700'
                   : 'bg-gray-400 cursor-not-allowed'
               }`}
-              onClick={() => incident.status === 'PENDING' && handleAcceptIncident(incident.incident_id)}
-              disabled={incident.status !== 'PENDING' || acceptIncidentMutation.isPending}
+              onClick={() => incident.status === 'PENDING' && handleIncidentClick(incident)}
+              disabled={incident.status !== 'PENDING'}
             >
-              {acceptIncidentMutation.isPending && acceptIncidentMutation.variables?.incident_id === incident.incident_id
-                ? 'Aceitando...'
-                : PT_BR.dispatch.acceptIncident}
+              {PT_BR.dispatch.viewDetails}
             </button>
           </div>
         ))}
       </div>
+
+      <IncidentDrawer
+        incident={selectedIncident}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+      />
     </div>
   );
 };

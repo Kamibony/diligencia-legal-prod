@@ -1,4 +1,10 @@
 export const PT_BR = {
+  cases: {
+    title: "Meus Casos",
+    loading: "Carregando seus casos...",
+    error: "Erro ao carregar casos.",
+    empty: "Você ainda não assumiu nenhuma ocorrência."
+  },
   auth: {
     mockLoginTitle: "Login Simulado Gov.br",
     loginButton: "Entrar com gov.br",
@@ -13,9 +19,11 @@ export const PT_BR = {
     noIncidents: "Nenhuma ocorrência encontrada na sua região.",
     status: {
       PENDING: "PENDENTE",
+      ACCEPTED: "ACEITO",
     },
     created: "Criado em: ",
     acceptIncident: "Aceitar Ocorrência",
+    viewDetails: "Ver Detalhes",
   },
   geolocation: {
     notSupported: "Geolocalização não é suportada pelo seu navegador",

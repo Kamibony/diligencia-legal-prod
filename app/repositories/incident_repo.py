@@ -86,3 +86,19 @@ class IncidentRepository(BaseRepository[IncidentResponse]):
                 all_incidents[incident.incident_id] = incident
 
         return list(all_incidents.values())
+
+    def find_accepted_incidents_by_lawyer(self, lawyer_id: str) -> list[IncidentResponse]:
+        """
+        Finds all accepted incidents assigned to a specific lawyer.
+        """
+        query = self._collection.where(
+            filter=firestore.FieldFilter("status", "==", "ACCEPTED")
+        ).where(
+            filter=firestore.FieldFilter("lawyer_id", "==", lawyer_id)
+        )
+
+        incidents = []
+        for doc in query.stream():
+            incidents.append(self.model(**doc.to_dict()))
+
+        return incidents

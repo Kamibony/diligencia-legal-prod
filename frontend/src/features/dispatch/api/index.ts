@@ -9,6 +9,8 @@ export interface Incident {
   longitude: number;
   created_at: string;
   lawyer_id?: string;
+  warrant_number?: string;
+  extracted_data?: Record<string, any>;
 }
 
 export const getNearbyIncidents = async (lat: number, lon: number, radius = 5000): Promise<Incident[]> => {
