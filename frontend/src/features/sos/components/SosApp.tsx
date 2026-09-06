@@ -23,7 +23,35 @@ export const SosApp = () => {
     }
   }, [createIncidentMutation.isSuccess, createIncidentMutation.data]);
 
+  const playBeep = () => {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioContextClass) {
+        const audioCtx = new AudioContextClass();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); // Hz
+
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.2);
+      }
+    } catch (e) {
+      console.warn('AudioContext not supported or blocked', e);
+    }
+  };
+
   const handleSOSClick = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate([200, 100, 200]);
+    }
     setShowForm(true);
   };
 
@@ -68,6 +96,7 @@ export const SosApp = () => {
     };
 
     createIncidentMutation.mutate(payload);
+    playBeep();
   };
 
   if (activeIncidentId) {
