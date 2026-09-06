@@ -30,6 +30,7 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
 
   const isPending = incident.status === 'PENDING';
   const isAccepting = acceptIncidentMutation.isPending;
+  const securityPin = incident ? parseInt(incident.incident_id.substring(0, 8), 16).toString().slice(0, 4).padStart(4, '0') : '0000';
 
   return (
     <>
@@ -120,6 +121,21 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
                </div>
             </div>
           </div>
+
+          {/* PIN Block when Accepted */}
+          {!isPending && (
+            <div className="bg-slate-800/80 p-5 rounded-xl border border-slate-600 shadow-inner text-center">
+              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3">Seu Código de Chegada (PIN)</p>
+              <div className="flex justify-center gap-3">
+                {securityPin.split('').map((digit, i) => (
+                  <div key={i} className="w-12 h-14 bg-slate-900 border border-slate-700 rounded-xl flex items-center justify-center text-2xl font-black text-white shadow-md">
+                    {digit}
+                  </div>
+                ))}
+              </div>
+              <p className="text-slate-500 text-xs mt-3 italic">Informe este código ao cliente ao chegar.</p>
+            </div>
+          )}
 
           {/* Legal Details */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">

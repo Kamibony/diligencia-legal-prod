@@ -14,6 +14,7 @@ export const RadarDashboard = () => {
 
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
 
   const handleIncidentClick = (incident: Incident) => {
     setSelectedIncident(incident);
@@ -46,7 +47,20 @@ export const RadarDashboard = () => {
       </div>
 
       <div className="relative z-10 w-full flex flex-col items-center">
-        <h1 className="text-3xl font-black text-white mb-2 tracking-wide uppercase drop-shadow-md">{PT_BR.dispatch.title}</h1>
+        <div className="flex items-center justify-between w-full max-w-lg mb-6">
+          <h1 className="text-3xl font-black text-white tracking-wide uppercase drop-shadow-md">{PT_BR.dispatch.title}</h1>
+          <div className="flex items-center gap-3">
+            <span className={`text-sm font-bold uppercase tracking-wider ${isOnline ? 'text-green-400' : 'text-slate-500'}`}>
+              {isOnline ? 'Em Plantão' : 'Offline'}
+            </span>
+            <button
+              onClick={() => setIsOnline(!isOnline)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${isOnline ? 'bg-green-500' : 'bg-slate-600'}`}
+            >
+              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isOnline ? 'translate-x-6' : 'translate-x-1'}`} />
+            </button>
+          </div>
+        </div>
 
         {geoLoading && (
           <p className="text-sm text-slate-400 mb-6 font-mono">{PT_BR.dispatch.obtainingLocation}</p>
@@ -118,6 +132,20 @@ export const RadarDashboard = () => {
               </button>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Live Dispatch Log Overlay */}
+      <div className="fixed bottom-4 left-4 z-50 bg-slate-900/90 backdrop-blur-md border border-slate-700 p-3 rounded-lg shadow-xl max-w-xs text-xs font-mono w-64 pointer-events-none">
+        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-800">
+          <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-slate-300 font-bold tracking-wider">SYSTEM_LOG</span>
+        </div>
+        <div className="space-y-1.5 h-20 overflow-hidden relative">
+          <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-slate-900/90 to-transparent z-10"></div>
+          <p className="text-slate-400 animate-[fadeIn_0.5s_ease-in-out_0s_forwards]">[System] Estabelecendo conexão segura...</p>
+          <p className="text-blue-400 animate-[fadeIn_0.5s_ease-in-out_2s_forwards]">[System] Monitorando setor Manaíra...</p>
+          <p className="text-green-400 animate-[fadeIn_0.5s_ease-in-out_4s_forwards]">[System] Rede de confiança ativa.</p>
         </div>
       </div>
 
