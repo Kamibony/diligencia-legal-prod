@@ -33,6 +33,17 @@ def get_nearby_incidents(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@router.get("/me", response_model=List[IncidentResponse], status_code=200)
+def get_my_incidents(
+    lawyer_id: str = Query(...)
+):
+    try:
+        service = IncidentService()
+        return service.get_lawyer_incidents(lawyer_id)
+    except Exception as e:
+        logger.error(f"Error fetching lawyer incidents: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 @router.get("/{incident_id}", response_model=IncidentResponse, status_code=200)
 def get_incident(incident_id: str):
     try:
@@ -55,15 +66,4 @@ def accept_incident(incident_id: str, payload: IncidentAcceptRequest):
         raise HTTPException(status_code=409, detail=str(e))
     except Exception as e:
         logger.error(f"Error accepting incident {incident_id}: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
-
-@router.get("/me", response_model=List[IncidentResponse], status_code=200)
-def get_my_incidents(
-    lawyer_id: str = Query(...)
-):
-    try:
-        service = IncidentService()
-        return service.get_lawyer_incidents(lawyer_id)
-    except Exception as e:
-        logger.error(f"Error fetching lawyer incidents: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
