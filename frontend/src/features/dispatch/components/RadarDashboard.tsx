@@ -22,74 +22,103 @@ export const RadarDashboard = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-10 px-4 pb-20">
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">{PT_BR.dispatch.title}</h1>
+    <div className="min-h-screen bg-slate-900 flex flex-col items-center pt-10 px-4 pb-20 relative overflow-hidden">
 
-      {geoLoading && (
-        <p className="text-sm text-gray-500 mb-6">{PT_BR.dispatch.obtainingLocation}</p>
-      )}
+      {/* Simulated Glowing Map Grid Overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-20"
+        style={{
+          backgroundImage: 'linear-gradient(to right, #334155 1px, transparent 1px), linear-gradient(to bottom, #334155 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
+        }}
+      ></div>
 
-      {usingFallback && (
-        <div className="bg-yellow-100 text-yellow-800 text-xs px-3 py-1 rounded-full mb-6">
-          {PT_BR.dispatch.usingFallback}
+      {/* Pulsing Radar Center */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        <div className="relative flex justify-center items-center">
+          <div className="absolute w-96 h-96 bg-green-500/10 rounded-full animate-ping" style={{ animationDuration: '3s' }}></div>
+          <div className="absolute w-64 h-64 bg-green-500/20 rounded-full animate-ping" style={{ animationDuration: '3s', animationDelay: '1s' }}></div>
+          <div className="absolute w-32 h-32 border border-green-500/30 rounded-full"></div>
+          <div className="absolute w-64 h-64 border border-green-500/20 rounded-full"></div>
+          <div className="absolute w-96 h-96 border border-green-500/10 rounded-full"></div>
+          <div className="w-4 h-4 bg-green-500 rounded-full shadow-[0_0_15px_5px_rgba(34,197,94,0.5)]"></div>
         </div>
-      )}
+      </div>
 
-      {geoError && !usingFallback && (
-        <div className="bg-red-100 text-red-800 p-3 rounded mb-6 text-sm">
-          {PT_BR.dispatch.locationError}{geoError}
+      <div className="relative z-10 w-full flex flex-col items-center">
+        <h1 className="text-3xl font-black text-white mb-2 tracking-wide uppercase drop-shadow-md">{PT_BR.dispatch.title}</h1>
+
+        {geoLoading && (
+          <p className="text-sm text-slate-400 mb-6 font-mono">{PT_BR.dispatch.obtainingLocation}</p>
+        )}
+
+        {usingFallback && (
+          <div className="bg-yellow-500/20 text-yellow-300 border border-yellow-500/50 text-xs px-4 py-1.5 rounded-full mb-6 font-medium backdrop-blur-sm">
+            {PT_BR.dispatch.usingFallback}
+          </div>
+        )}
+
+        {geoError && !usingFallback && (
+          <div className="bg-red-500/20 text-red-300 border border-red-500/50 p-3 rounded mb-6 text-sm backdrop-blur-sm font-medium">
+            {PT_BR.dispatch.locationError}{geoError}
+          </div>
+        )}
+
+        <div className="w-full max-w-lg space-y-4">
+          {incidentsLoading && !incidents && (
+            <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl shadow-lg p-6 text-center">
+              <div className="animate-pulse flex flex-col items-center">
+                <div className="rounded-full bg-slate-700 h-16 w-16 mb-4"></div>
+                <div className="h-4 bg-slate-700 rounded w-1/2 mb-2"></div>
+              </div>
+              <p className="mt-4 text-slate-400 font-mono">{PT_BR.dispatch.searchingIncidents}</p>
+            </div>
+          )}
+
+          {incidentsError && (
+            <div className="bg-red-900/30 text-red-400 p-4 rounded-xl shadow border border-red-800/50 backdrop-blur-sm">
+              {PT_BR.dispatch.failedFetch}
+            </div>
+          )}
+
+          {incidents && incidents.length === 0 && (
+            <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl shadow p-6 text-center text-slate-400 font-mono">
+              {PT_BR.dispatch.noIncidents}
+            </div>
+          )}
+
+          {incidents && incidents.map((incident) => (
+            <div key={incident.incident_id} className="bg-slate-800/60 backdrop-blur-md rounded-xl shadow-lg p-5 border border-slate-700 hover:border-slate-500 transition-colors">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-bold text-lg text-white">{incident.detainee_name}</h3>
+                <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${
+                  incident.status === 'PENDING' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-slate-700/50 text-slate-400 border border-slate-600'
+                }`}>
+                  {PT_BR.dispatch.status[incident.status as keyof typeof PT_BR.dispatch.status] || incident.status}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1 mb-4">
+                <p className="text-sm text-slate-400 font-mono">
+                  {PT_BR.dispatch.created}{new Date(incident.created_at).toLocaleTimeString()}
+                </p>
+                <p className="text-xs text-slate-500 font-mono">
+                  ID: {incident.incident_id.substring(0, 8)}...
+                </p>
+              </div>
+              <button
+                className={`w-full py-2.5 rounded-lg font-bold uppercase tracking-widest transition-all ${
+                  incident.status === 'PENDING'
+                    ? 'bg-green-600 hover:bg-green-500 text-white shadow-[0_0_10px_rgba(22,163,74,0.4)]'
+                    : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                }`}
+                onClick={() => incident.status === 'PENDING' && handleIncidentClick(incident)}
+                disabled={incident.status !== 'PENDING'}
+              >
+                {PT_BR.dispatch.viewDetails}
+              </button>
+            </div>
+          ))}
         </div>
-      )}
-
-      <div className="w-full max-w-lg space-y-4">
-        {incidentsLoading && !incidents && (
-          <div className="bg-white rounded-xl shadow-md p-6 text-center">
-            <div className="animate-pulse flex flex-col items-center">
-              <div className="rounded-full bg-slate-200 h-16 w-16 mb-4"></div>
-              <div className="h-4 bg-slate-200 rounded w-1/2 mb-2"></div>
-            </div>
-            <p className="mt-4 text-gray-500">{PT_BR.dispatch.searchingIncidents}</p>
-          </div>
-        )}
-
-        {incidentsError && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl shadow border border-red-200">
-            {PT_BR.dispatch.failedFetch}
-          </div>
-        )}
-
-        {incidents && incidents.length === 0 && (
-          <div className="bg-white rounded-xl shadow p-6 text-center text-gray-500">
-            {PT_BR.dispatch.noIncidents}
-          </div>
-        )}
-
-        {incidents && incidents.map((incident) => (
-          <div key={incident.incident_id} className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-semibold text-lg text-gray-900">{incident.detainee_name}</h3>
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                incident.status === 'PENDING' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-              }`}>
-                {PT_BR.dispatch.status[incident.status as keyof typeof PT_BR.dispatch.status] || incident.status}
-              </span>
-            </div>
-            <p className="text-sm text-gray-600 mb-4">
-              {PT_BR.dispatch.created}{new Date(incident.created_at).toLocaleTimeString()}
-            </p>
-            <button
-              className={`w-full py-2 text-white rounded-lg font-medium transition-colors ${
-                incident.status === 'PENDING'
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : 'bg-gray-400 cursor-not-allowed'
-              }`}
-              onClick={() => incident.status === 'PENDING' && handleIncidentClick(incident)}
-              disabled={incident.status !== 'PENDING'}
-            >
-              {PT_BR.dispatch.viewDetails}
-            </button>
-          </div>
-        ))}
       </div>
 
       <IncidentDrawer

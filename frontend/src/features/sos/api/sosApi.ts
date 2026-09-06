@@ -14,3 +14,8 @@ export const createIncident = async (payload: CreateIncidentPayload) => {
   const response = await api.post('/incidents', payload);
   return response.data;
 };
+
+export const getIncident = async (incident_id: string) => {
+  const response = await api.get(`/incidents/${incident_id}`);
+  return response.data;
+};
