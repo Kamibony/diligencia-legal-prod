@@ -1,0 +1,21 @@
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [251295]
+INFO:     Started server process [290593]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:36126 - "POST /incidents HTTP/1.1" 201 Created
+INFO:     127.0.0.1:36126 - "POST /incidents HTTP/1.1" 201 Created
+INFO:     127.0.0.1:36126 - "GET /incidents/nearby?lat=-7.11532&lon=-34.86105&radius=5000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58270 - "POST /incidents HTTP/1.1" 201 Created
+INFO:     127.0.0.1:58270 - "POST /incidents/6bc75c67-1164-42c1-844d-a305e014e85f/accept HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58270 - "GET /incidents/nearby?lat=-7.11532&lon=-34.86105&radius=5000 HTTP/1.1" 200 OK
+Error accepting incident c595a6c4-99dc-4551-9c3c-ce3263ea1461: Incident not found
+INFO:     127.0.0.1:52126 - "POST /incidents/c595a6c4-99dc-4551-9c3c-ce3263ea1461/accept HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:55996 - "OPTIONS /incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56002 - "POST /incidents HTTP/1.1" 201 Created
+INFO:     127.0.0.1:56002 - "GET /incidents/2b2ae792-988c-42a8-9ff0-6e4896e12492 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56010 - "POST /incidents/2b2ae792-988c-42a8-9ff0-6e4896e12492/accept HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56002 - "GET /incidents/2b2ae792-988c-42a8-9ff0-6e4896e12492 HTTP/1.1" 200 OK

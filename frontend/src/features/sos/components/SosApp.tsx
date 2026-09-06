@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCreateIncident } from '../hooks/useCreateIncident';
+import { useIncident } from '../hooks/useIncident';
 import { PT_BR } from '../../../locales/pt-BR';
 import { type CreateIncidentPayload } from '../api/sosApi';
 
@@ -11,8 +12,16 @@ export const SosApp = () => {
   const [incidentType, setIncidentType] = useState<string>(PT_BR.sos.incidentTypes.policeApproach);
   const [locationConfirm, setLocationConfirm] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [activeIncidentId, setActiveIncidentId] = useState<string | null>(null);
 
   const createIncidentMutation = useCreateIncident();
+  const { data: incidentData } = useIncident(activeIncidentId);
+
+  useEffect(() => {
+    if (createIncidentMutation.isSuccess && createIncidentMutation.data?.incident_id) {
+      setActiveIncidentId(createIncidentMutation.data.incident_id);
+    }
+  }, [createIncidentMutation.isSuccess, createIncidentMutation.data]);
 
   const handleSOSClick = () => {
     setShowForm(true);
@@ -61,11 +70,56 @@ export const SosApp = () => {
     createIncidentMutation.mutate(payload);
   };
 
-  if (createIncidentMutation.isSuccess) {
+  if (activeIncidentId) {
+    const isAccepted = incidentData?.status === 'ACCEPTED';
+
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-red-50 px-4">
-         <div className="max-w-md w-full p-8 bg-white shadow-xl rounded-2xl text-center">
-            <h2 className="text-2xl font-bold text-green-600 mb-4">{PT_BR.sos.success}</h2>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 px-4">
+         <div className="max-w-md w-full p-8 bg-slate-800 shadow-2xl rounded-3xl border border-slate-700 text-center relative overflow-hidden">
+            {/* Pulse effect background */}
+            {!isAccepted && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                <div className="w-64 h-64 rounded-full border-4 border-red-500 animate-ping"></div>
+              </div>
+            )}
+
+            <div className="relative z-10">
+              {isAccepted ? (
+                <>
+                  <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/50">
+                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h2 className="text-3xl font-bold text-white mb-2">Advogado a caminho</h2>
+                  <p className="text-green-400 font-medium mb-6">ETA: 6 min</p>
+
+                  <div className="bg-slate-700/50 p-4 rounded-xl text-left border border-slate-600">
+                    <p className="text-slate-300 text-sm mb-1">Assumido por:</p>
+                    <p className="text-white font-semibold flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-green-400"></span>
+                      Escritório Lima & Associados
+                    </p>
+                    <p className="text-slate-400 text-xs mt-1">OAB/PB 14.200</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-red-600/50 relative">
+                     <div className="absolute inset-0 rounded-full border-4 border-red-400 animate-pulse"></div>
+                     <svg className="w-10 h-10 text-white animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                     </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Procurando advogado...</h2>
+                  <p className="text-slate-400 text-sm mb-8">Notificando a rede de confiança num raio de 10km.</p>
+
+                  <div className="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                    <div className="bg-red-500 h-full w-1/3 animate-pulse rounded-full"></div>
+                  </div>
+                </>
+              )}
+            </div>
          </div>
       </div>
     );

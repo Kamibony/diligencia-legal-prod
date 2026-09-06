@@ -56,3 +56,9 @@ class IncidentService:
 
     def get_lawyer_incidents(self, lawyer_id: str) -> list[IncidentResponse]:
         return self.repository.find_accepted_incidents_by_lawyer(lawyer_id)
+
+    def get_incident(self, incident_id: str) -> IncidentResponse:
+        incident = self.repository.get_incident(incident_id)
+        if not incident:
+            raise ValueError(f"Incident {incident_id} not found")
+        return incident

@@ -33,6 +33,17 @@ def get_nearby_incidents(
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@router.get("/{incident_id}", response_model=IncidentResponse, status_code=200)
+def get_incident(incident_id: str):
+    try:
+        service = IncidentService()
+        return service.get_incident(incident_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error fetching incident {incident_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 @router.post("/{incident_id}/accept", response_model=dict, status_code=200)
 def accept_incident(incident_id: str, payload: IncidentAcceptRequest):
     try:

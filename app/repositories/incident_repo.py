@@ -87,6 +87,16 @@ class IncidentRepository(BaseRepository[IncidentResponse]):
 
         return list(all_incidents.values())
 
+    def get_incident(self, incident_id: str) -> IncidentResponse:
+        """
+        Retrieves a single incident by its ID.
+        """
+        doc_ref = self._collection.document(incident_id)
+        snapshot = doc_ref.get()
+        if not snapshot.exists:
+            return None
+        return self.model(**snapshot.to_dict())
+
     def find_accepted_incidents_by_lawyer(self, lawyer_id: str) -> list[IncidentResponse]:
         """
         Finds all accepted incidents assigned to a specific lawyer.
