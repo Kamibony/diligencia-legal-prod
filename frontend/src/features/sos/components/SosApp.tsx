@@ -13,6 +13,8 @@ export const SosApp = () => {
   const [locationConfirm, setLocationConfirm] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeIncidentId, setActiveIncidentId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'family' | 'client'>('family');
+  const [isScanning, setIsScanning] = useState(false);
 
   const createIncidentMutation = useCreateIncident();
   const { data: incidentData } = useIncident(activeIncidentId);
@@ -97,6 +99,28 @@ export const SosApp = () => {
 
     createIncidentMutation.mutate(payload);
     playBeep();
+  };
+
+  const handleScanWarrant = async () => {
+    setIsScanning(true);
+
+    // Simulate OCR / network delay
+    setTimeout(async () => {
+      const coords = await getCoordinates();
+
+      const payload: CreateIncidentPayload = {
+        client_id: "client_id_mock",
+        detainee_name: "Cliente Principal",
+        latitude: coords.lat,
+        longitude: coords.lon,
+        document_base64: "c29zX2RvY3VtZW50X21vY2s=",
+        warrant_number: "004291-55.2026.8.15.2001",
+      };
+
+      createIncidentMutation.mutate(payload);
+      playBeep();
+      setIsScanning(false);
+    }, 2000);
   };
 
   if (activeIncidentId) {
@@ -196,16 +220,58 @@ export const SosApp = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-red-50 px-4">
+
+      {/* View Mode Toggle */}
+      {!activeIncidentId && (
+        <div className="absolute top-4 w-full flex justify-center z-20">
+          <div className="bg-white rounded-full p-1 shadow-md border border-gray-200 flex">
+            <button
+              onClick={() => { setViewMode('family'); setShowForm(false); setErrorMsg(null); }}
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${viewMode === 'family' ? 'bg-red-600 text-white' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
+              Visão Familiar
+            </button>
+            <button
+              onClick={() => { setViewMode('client'); setShowForm(false); setErrorMsg(null); }}
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${viewMode === 'client' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:bg-gray-100'}`}
+            >
+              Visão do Cliente
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isScanning && (
+        <div className="absolute inset-0 bg-black/60 z-50 flex flex-col items-center justify-center backdrop-blur-sm">
+           <div className="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center">
+             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+             <p className="text-lg font-bold text-slate-800 animate-pulse">Analisando documento via IA...</p>
+           </div>
+        </div>
+      )}
+
       <div className="max-w-md w-full space-y-8 p-8 bg-white shadow-xl rounded-2xl border border-red-100 text-center">
         {!showForm ? (
           <div>
-            <h1 className="text-3xl font-extrabold text-red-600 mb-8">SOS Familiar</h1>
+            <h1 className={`text-3xl font-extrabold mb-8 ${viewMode === 'family' ? 'text-red-600' : 'text-blue-600'}`}>
+              {viewMode === 'family' ? 'SOS Familiar' : 'SOS Cliente'}
+            </h1>
+
             <button
               onClick={handleSOSClick}
-              className="w-48 h-48 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-2xl shadow-2xl transition-transform hover:scale-105 flex items-center justify-center mx-auto"
+              className="w-48 h-48 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-2xl shadow-2xl transition-transform hover:scale-105 flex items-center justify-center mx-auto mb-8"
             >
               {PT_BR.sos.buttonTitle}
             </button>
+
+            {viewMode === 'client' && (
+              <button
+                onClick={handleScanWarrant}
+                className="w-full flex justify-center py-4 px-6 border border-transparent text-lg font-bold rounded-xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg focus:outline-none transition-transform hover:scale-105 gap-3"
+              >
+                <span>📷</span> Fotografar Mandado (Busca/Prisão)
+              </button>
+            )}
           </div>
         ) : (
           <div>

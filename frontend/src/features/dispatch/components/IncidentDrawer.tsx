@@ -141,27 +141,36 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
             <h4 className="font-bold text-slate-300 border-b border-slate-700 pb-2 uppercase tracking-wide text-sm">Informações Legais</h4>
 
-            {incident.warrant_number && (
-              <div>
-                <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1">Número do Mandado</span>
-                <span className="block font-mono text-white bg-slate-900 p-2 rounded border border-slate-700">{incident.warrant_number}</span>
-              </div>
-            )}
-
-            {/* Extracted Data - fallback for now, as we don't have types for extracted_data yet but it exists on backend */}
-            {(incident as any).extracted_data && Object.keys((incident as any).extracted_data).length > 0 && (
-               <div>
-                  <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1">Dados Extraídos (OCR)</span>
-                  <div className="bg-slate-900 p-3 rounded border border-slate-700 text-sm text-green-400 font-mono">
-                    <pre className="whitespace-pre-wrap">
-                      {JSON.stringify((incident as any).extracted_data, null, 2)}
-                    </pre>
+            {(incident.warrant_number || ((incident as any).extracted_data && Object.keys((incident as any).extracted_data).length > 0)) ? (
+              <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 flex flex-col gap-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
                   </div>
-               </div>
-            )}
+                  <h5 className="text-white font-bold tracking-wide">Documento Anexado</h5>
+                </div>
 
-            {/* Fallback if no specific legal info */}
-            {!incident.warrant_number && !(incident as any).extracted_data && (
+                {incident.warrant_number && (
+                  <div>
+                    <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1">Número do Mandado</span>
+                    <span className="block font-mono text-white bg-slate-800 p-2 rounded border border-slate-600">{incident.warrant_number}</span>
+                  </div>
+                )}
+
+                {(incident as any).extracted_data && Object.keys((incident as any).extracted_data).length > 0 && (
+                  <div>
+                      <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1">Dados Extraídos (OCR)</span>
+                      <div className="bg-slate-800 p-3 rounded border border-slate-600 text-sm text-green-400 font-mono">
+                        <pre className="whitespace-pre-wrap">
+                          {JSON.stringify((incident as any).extracted_data, null, 2)}
+                        </pre>
+                      </div>
+                  </div>
+                )}
+              </div>
+            ) : (
               <p className="text-sm text-slate-500 italic font-mono">Nenhum detalhe legal adicional disponível.</p>
             )}
           </div>
