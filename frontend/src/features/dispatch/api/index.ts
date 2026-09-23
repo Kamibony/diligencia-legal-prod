@@ -12,6 +12,7 @@ export interface Incident {
   warrant_number?: string;
   incident_type?: string;
   document_image_url?: string;
+  imageUrl?: string;
   extracted_data?: Record<string, any>;
 }
 

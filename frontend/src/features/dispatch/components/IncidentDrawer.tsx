@@ -170,7 +170,7 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
             <h4 className="font-bold text-slate-300 border-b border-slate-700 pb-2 uppercase tracking-wide text-sm">Informações Legais</h4>
 
-            {(incident.warrant_number || incident.document_image_url || incident.incident_type || (incident.extracted_data && Object.keys(incident.extracted_data).length > 0)) ? (
+            {(incident.warrant_number || incident.document_image_url || incident.imageUrl || incident.incident_type || (incident.extracted_data && Object.keys(incident.extracted_data).length > 0)) ? (
               <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 flex flex-col gap-3">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30">
@@ -181,9 +181,9 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
                   <h5 className="text-white font-bold tracking-wide">Documento Anexado</h5>
                 </div>
 
-                {incident.document_image_url && (
+                {(incident.imageUrl || incident.document_image_url) && (
                   <div className="flex justify-center mb-4">
-                    <img src={incident.document_image_url} alt="Documento" className="rounded-lg shadow-md border border-slate-600 max-h-48 object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src={incident.imageUrl || incident.document_image_url} alt="Documento" className="rounded-lg shadow-md border border-slate-600 max-h-48 object-cover opacity-80 hover:opacity-100 transition-opacity" />
                   </div>
                 )}
 

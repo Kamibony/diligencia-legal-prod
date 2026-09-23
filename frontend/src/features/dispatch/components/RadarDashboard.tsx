@@ -1,6 +1,6 @@
 import { IncidentDrawer } from './IncidentDrawer';
 import type { Incident } from '../api';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGeolocation } from '../../../utils/useGeolocation';
 import { useIncidents } from '../hooks/useIncidents';
 import { PT_BR } from '../../../locales/pt-BR';
@@ -15,6 +15,51 @@ export const RadarDashboard = () => {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+
+  const seenIncidentIds = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (incidents) {
+      let hasNewPending = false;
+      incidents.forEach((incident) => {
+        if (incident.status === 'PENDING' && !seenIncidentIds.current.has(incident.incident_id)) {
+          hasNewPending = true;
+          seenIncidentIds.current.add(incident.incident_id);
+        }
+      });
+
+      if (hasNewPending) {
+        // Trigger synthetic beep
+        try {
+          const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+          oscillator.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1);
+
+          gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+
+          oscillator.start();
+          oscillator.stop(audioCtx.currentTime + 0.5);
+
+          // Close the audio context after the sound finishes to prevent hitting the browser's hardware limit
+          setTimeout(() => {
+            if (audioCtx.state !== 'closed') {
+              audioCtx.close();
+            }
+          }, 600);
+        } catch (e) {
+          console.error("Audio playback failed", e);
+        }
+      }
+    }
+  }, [incidents]);
 
   const handleIncidentClick = (incident: Incident) => {
     setSelectedIncident(incident);
@@ -115,7 +160,7 @@ export const RadarDashboard = () => {
           )}
 
           {incidents && incidents.map((incident) => (
-            <div key={incident.incident_id} className="bg-slate-800/60 backdrop-blur-md rounded-xl shadow-lg p-5 border border-slate-700 hover:border-slate-500 transition-colors">
+            <div key={incident.incident_id} className={`bg-slate-800/60 backdrop-blur-md rounded-xl shadow-lg p-5 transition-colors ${incident.status === 'PENDING' ? 'border border-red-500 ring-2 ring-red-500/50 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:border-red-400' : 'border border-slate-700 hover:border-slate-500'}`}>
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-bold text-lg text-white">{incident.detainee_name}</h3>
                 <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${
