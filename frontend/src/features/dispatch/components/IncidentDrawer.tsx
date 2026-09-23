@@ -67,7 +67,12 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
           {/* Header Info */}
           <div>
             <div className="flex justify-between items-start mb-3">
-              <h3 className="text-2xl font-black text-white">{incident.detainee_name}</h3>
+              <div>
+                <h3 className="text-2xl font-black text-white">{incident.detainee_name}</h3>
+                {incident.incident_type && (
+                  <p className="text-sm font-bold text-red-400 mt-1 uppercase tracking-wide">{incident.incident_type}</p>
+                )}
+              </div>
               <span className={`px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-wider border ${
                 isPending ? 'bg-red-500/10 text-red-400 border-red-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'
               }`}>
@@ -165,7 +170,7 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
             <h4 className="font-bold text-slate-300 border-b border-slate-700 pb-2 uppercase tracking-wide text-sm">Informações Legais</h4>
 
-            {(incident.warrant_number || ((incident as any).extracted_data && Object.keys((incident as any).extracted_data).length > 0)) ? (
+            {(incident.warrant_number || incident.document_image_url || incident.incident_type || (incident.extracted_data && Object.keys(incident.extracted_data).length > 0)) ? (
               <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700 flex flex-col gap-3">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30">
@@ -176,6 +181,12 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
                   <h5 className="text-white font-bold tracking-wide">Documento Anexado</h5>
                 </div>
 
+                {incident.document_image_url && (
+                  <div className="flex justify-center mb-4">
+                    <img src={incident.document_image_url} alt="Documento" className="rounded-lg shadow-md border border-slate-600 max-h-48 object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                  </div>
+                )}
+
                 {incident.warrant_number && (
                   <div>
                     <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1">Número do Mandado</span>
@@ -183,12 +194,12 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
                   </div>
                 )}
 
-                {(incident as any).extracted_data && Object.keys((incident as any).extracted_data).length > 0 && (
+                {incident.extracted_data && Object.keys(incident.extracted_data).length > 0 && (
                   <div>
                       <span className="block text-xs text-slate-500 uppercase tracking-wider mb-1">Dados Extraídos (OCR)</span>
                       <div className="bg-slate-800 p-3 rounded border border-slate-600 text-sm text-green-400 font-mono">
                         <pre className="whitespace-pre-wrap">
-                          {JSON.stringify((incident as any).extracted_data, null, 2)}
+                          {JSON.stringify(incident.extracted_data, null, 2)}
                         </pre>
                       </div>
                   </div>

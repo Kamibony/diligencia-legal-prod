@@ -8,6 +8,8 @@ export interface CreateIncidentPayload {
   longitude: number;
   document_base64: string;
   warrant_number?: string;
+  incident_type?: string;
+  extracted_data?: Record<string, any>;
 }
 
 export const createIncident = async (payload: CreateIncidentPayload) => {

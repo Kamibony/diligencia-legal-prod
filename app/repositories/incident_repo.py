@@ -40,11 +40,13 @@ class IncidentRepository(BaseRepository[IncidentResponse]):
             latitude=payload.latitude,
             longitude=payload.longitude,
             warrant_number=payload.warrant_number,
+            incident_type=getattr(payload, 'incident_type', 'Outros'),
+            document_image_url="https://via.placeholder.com/150?text=Documento",
             geohash=geohash,
             geohashes=geohashes or [],
             lawyer_id=None,
             status="PENDING",
-            extracted_data={},
+            extracted_data=getattr(payload, 'extracted_data', {}),
             created_at=datetime.now(timezone.utc)
         )
         return super().create(document_id=incident_id, data=incident_data)

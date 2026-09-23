@@ -10,6 +10,8 @@ export interface Incident {
   created_at: string;
   lawyer_id?: string;
   warrant_number?: string;
+  incident_type?: string;
+  document_image_url?: string;
   extracted_data?: Record<string, any>;
 }
 
