@@ -137,6 +137,30 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
             </div>
           )}
 
+          {/* KYC Details - Visible only when PENDING */}
+          {isPending && (
+            <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-3">
+              <h4 className="font-bold text-slate-300 border-b border-slate-700 pb-2 uppercase tracking-wide text-sm">Identificação do Cliente</h4>
+
+              <div className="flex items-start gap-4 pt-2">
+                <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-slate-400 font-bold text-xl uppercase">
+                  JS
+                </div>
+                <div className="flex-1">
+                  <h5 className="text-white font-bold text-lg leading-tight">João da Silva</h5>
+                  <p className="text-slate-400 text-sm font-mono mt-0.5">CPF: ***.123.456-**</p>
+
+                  <div className="mt-3 inline-flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 text-green-400 text-xs px-2.5 py-1 rounded-full font-medium">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Identidade Verificada (Gov.br)
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Legal Details */}
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 space-y-4">
             <h4 className="font-bold text-slate-300 border-b border-slate-700 pb-2 uppercase tracking-wide text-sm">Informações Legais</h4>
