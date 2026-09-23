@@ -18,6 +18,13 @@ export const RadarDashboard = () => {
 
   const seenIncidentIds = useRef<Set<string>>(new Set());
 
+  // Determine the newest pending incident for targeted pulsing
+  const newestPendingIncidentId = incidents
+    ? incidents
+        .filter((i) => i.status === 'PENDING')
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]?.incident_id
+    : null;
+
   useEffect(() => {
     if (incidents) {
       let hasNewPending = false;
@@ -160,9 +167,19 @@ export const RadarDashboard = () => {
           )}
 
           {incidents && incidents.map((incident) => (
-            <div key={incident.incident_id} className={`bg-slate-800/60 backdrop-blur-md rounded-xl shadow-lg p-5 transition-colors ${incident.status === 'PENDING' ? 'border border-red-500 ring-2 ring-red-500/50 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:border-red-400' : 'border border-slate-700 hover:border-slate-500'}`}>
+            <div key={incident.incident_id} className={`bg-slate-800/60 backdrop-blur-md rounded-xl shadow-lg p-5 transition-colors ${
+              incident.status === 'PENDING'
+                ? incident.incident_id === newestPendingIncidentId
+                  ? 'border border-red-500 ring-2 ring-red-500/50 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:border-red-400'
+                  : 'border border-red-500/50 hover:border-red-400 shadow-md'
+                : 'border border-slate-700 hover:border-slate-500'
+            }`}>
               <div className="flex justify-between items-start mb-2">
-                <h3 className="font-bold text-lg text-white">{incident.detainee_name}</h3>
+                <h3 className="font-bold text-lg text-white">
+                  {incident.incident_type
+                    ? (PT_BR.sos.incidentTypes[incident.incident_type as keyof typeof PT_BR.sos.incidentTypes] || incident.incident_type)
+                    : incident.detainee_name}
+                </h3>
                 <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${
                   incident.status === 'PENDING' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-slate-700/50 text-slate-400 border border-slate-600'
                 }`}>
@@ -171,7 +188,16 @@ export const RadarDashboard = () => {
               </div>
               <div className="flex flex-col gap-1 mb-4">
                 <p className="text-sm text-slate-400 font-mono">
-                  {PT_BR.dispatch.created}{new Date(incident.created_at).toLocaleTimeString()}
+                  {PT_BR.dispatch.created}{
+                    (() => {
+                      const d = new Date(incident.created_at);
+                      const day = d.getDate().toString().padStart(2, '0');
+                      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+                      const hours = d.getHours().toString().padStart(2, '0');
+                      const mins = d.getMinutes().toString().padStart(2, '0');
+                      return `${day}/${month} - ${hours}:${mins}`;
+                    })()
+                  }
                 </p>
                 <p className="text-xs text-slate-500 font-mono">
                   ID: {incident.incident_id.substring(0, 8)}...
