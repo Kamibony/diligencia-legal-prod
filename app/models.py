@@ -32,6 +32,8 @@ class IncidentCreate(BaseModel):
     longitude: float
     document_base64: str
     warrant_number: Optional[str] = None
+    incident_type: str = "Outros"
+    extracted_data: dict = {}
 
 class IncidentResponse(BaseModel):
     incident_id: str
@@ -41,6 +43,8 @@ class IncidentResponse(BaseModel):
     latitude: float
     longitude: float
     warrant_number: Optional[str] = None
+    incident_type: str = "Outros"
+    document_image_url: Optional[str] = None
     geohash: str
     geohashes: Optional[list[str]] = None
     lawyer_id: Optional[str] = None

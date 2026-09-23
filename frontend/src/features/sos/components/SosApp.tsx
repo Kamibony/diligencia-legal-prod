@@ -15,6 +15,7 @@ export const SosApp = () => {
   const [activeIncidentId, setActiveIncidentId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'family' | 'client'>('family');
   const [isScanning, setIsScanning] = useState(false);
+  const [showTypeSelection, setShowTypeSelection] = useState(false);
 
   const createIncidentMutation = useCreateIncident();
   const { data: incidentData } = useIncident(activeIncidentId);
@@ -105,22 +106,26 @@ export const SosApp = () => {
     setIsScanning(true);
 
     // Simulate OCR / network delay
-    setTimeout(async () => {
-      const coords = await getCoordinates();
-
-      const payload: CreateIncidentPayload = {
-        client_id: "client_id_mock",
-        detainee_name: "Cliente Principal",
-        latitude: coords.lat,
-        longitude: coords.lon,
-        document_base64: "c29zX2RvY3VtZW50X21vY2s=",
-        warrant_number: "004291-55.2026.8.15.2001",
-      };
-
-      createIncidentMutation.mutate(payload);
-      playBeep();
+    setTimeout(() => {
       setIsScanning(false);
+      setShowTypeSelection(true);
     }, 2000);
+  };
+
+  const handleTypeSelect = async (type: string) => {
+    const coords = await getCoordinates();
+    const payload: CreateIncidentPayload = {
+      client_id: "client_id_mock",
+      detainee_name: "Cliente Principal",
+      latitude: coords.lat,
+      longitude: coords.lon,
+      document_base64: "c29zX2RvY3VtZW50X21vY2s=",
+      warrant_number: "004291-55.2026.8.15.2001",
+      incident_type: type,
+      extracted_data: { texto_extraido: "Mandado Nº 004291-55.2026.8.15.2001" },
+    };
+    createIncidentMutation.mutate(payload);
+    playBeep();
   };
 
   if (activeIncidentId) {
@@ -251,7 +256,29 @@ export const SosApp = () => {
       )}
 
       <div className="max-w-md w-full space-y-8 p-8 bg-white shadow-xl rounded-2xl border border-red-100 text-center">
-        {!showForm ? (
+        {showTypeSelection ? (
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800 mb-6">Qual a ocorrência?</h2>
+            <div className="space-y-4">
+              {['Mandado de Busca', 'Mandado de Prisão', 'Prisão em Flagrante', 'Abordagem Policial'].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => handleTypeSelect(type)}
+                  disabled={createIncidentMutation.isPending}
+                  className="w-full py-4 px-6 border-2 border-slate-200 text-lg font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 hover:border-blue-500 shadow-sm focus:outline-none transition-all disabled:opacity-50"
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+            {createIncidentMutation.isPending && (
+              <p className="mt-4 text-blue-600 font-medium animate-pulse">Criando ocorrência...</p>
+            )}
+            {createIncidentMutation.isError && (
+              <div className="text-red-500 text-sm mt-4">{PT_BR.sos.error}</div>
+            )}
+          </div>
+        ) : !showForm ? (
           <div>
             <h1 className={`text-3xl font-extrabold mb-8 ${viewMode === 'family' ? 'text-red-600' : 'text-blue-600'}`}>
               {viewMode === 'family' ? 'SOS Familiar' : 'SOS Cliente'}
