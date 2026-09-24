@@ -183,7 +183,7 @@ export const IncidentDrawer: React.FC<IncidentDrawerProps> = ({ incident, isOpen
 
                 {(incident.imageUrl || incident.document_image_url) && (
                   <div className="flex justify-center mb-4">
-                    <img src={incident.imageUrl || incident.document_image_url} alt="Documento" className="rounded-lg shadow-md border border-slate-600 max-h-48 object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                    <img src={incident.imageUrl || incident.document_image_url} alt="Documento" className="rounded-lg shadow-md border border-slate-600 max-h-64 w-full object-contain" />
                   </div>
                 )}
 
